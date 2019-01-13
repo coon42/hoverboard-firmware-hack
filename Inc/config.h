@@ -15,7 +15,7 @@
 // How to calibrate: connect GND and RX of a 3.3v uart-usb adapter to the right sensor board cable (be careful not to use the red wire of the cable. 15v will destroye verything.). if you are using nunchuck, disable it temporarily. enable DEBUG_SERIAL_USART3 and DEBUG_SERIAL_ASCII use asearial terminal.
 
 // Battery voltage calibration: connect power source. see <How to calibrate>. write value nr 5 to BAT_CALIB_ADC. make and flash firmware. then you can verify voltage on value 6 (devide it by 100.0 to get calibrated voltage).
-#define BAT_CALIB_REAL_VOLTAGE        43.0       // input voltage measured by multimeter  
+#define BAT_CALIB_REAL_VOLTAGE        43.0       // input voltage measured by multimeter
 #define BAT_CALIB_ADC                 1704       // adc-value measured by mainboard (value nr 5 on UART debug output)
 
 #define BAT_NUMBER_OF_CELLS     10        // normal Hoverboard battery: 10s
@@ -25,7 +25,7 @@
 #define BAT_LOW_LVL2            3.5       // your battery is almost empty. Charge now! [V/cell]
 #define BAT_LOW_DEAD            3.37      // undervoltage poweroff. (while not driving) [V/cell]
 
-#define DC_CUR_LIMIT     15         // DC current limit in amps per motor. so 15 means it will draw 30A out of your battery. it does not disable motors, it is a soft current limit.
+#define DC_CUR_LIMIT     1         // DC current limit in amps per motor. so 15 means it will draw 30A out of your battery. it does not disable motors, it is a soft current limit.
 
 // Board overheat detection: the sensor is inside the STM/GD chip. it is very inaccurate without calibration (up to 45°C). so only enable this funcion after calibration! let your board cool down. see <How to calibrate>. get the real temp of the chip by thermo cam or another temp-sensor taped on top of the chip and write it to TEMP_CAL_LOW_DEG_C. write debug value 8 to TEMP_CAL_LOW_ADC. drive around to warm up the board. it should be at least 20°C warmer. repeat it for the HIGH-values. enable warning and/or poweroff and make and flash firmware.
 #define TEMP_CAL_LOW_ADC        1655      // temperature 1: ADC value
@@ -53,7 +53,7 @@
 // ############################### INPUT ###############################
 
 // ###### CONTROL VIA UART (serial) ######
-//#define CONTROL_SERIAL_USART2       // left sensor board cable, disable if ADC or PPM is used!
+#define CONTROL_SERIAL_USART2       // left sensor board cable, disable if ADC or PPM is used!
 #define CONTROL_BAUD       19200    // control via usart from eg an Arduino or raspberry
 // for Arduino, use void loop(void){ Serial.write((uint8_t *) &steer, sizeof(steer)); Serial.write((uint8_t *) &speed, sizeof(speed));delay(20); }
 
@@ -64,7 +64,7 @@
 
 // ###### CONTROL VIA TWO POTENTIOMETERS ######
 // ADC-calibration to cover the full poti-range: connect potis to left sensor board cable (0 to 3.3V) (do NOT use the red 15V wire in the cable!). see <How to calibrate>. turn the potis to minimum position, write value 1 to ADC1_MIN and value 2 to ADC2_MIN. turn to maximum position and repeat it for ADC?_MAX. make, flash and test it.
-#define CONTROL_ADC                 // use ADC as input. disable DEBUG_SERIAL_USART2!
+// #define CONTROL_ADC                 // use ADC as input. disable DEBUG_SERIAL_USART2!
 #define ADC1_MIN 0                // min ADC1-value while poti at minimum-position (0 - 4095)
 #define ADC1_MAX 4095               // max ADC1-value while poti at maximum-position (0 - 4095)
 #define ADC2_MIN 0                // min ADC2-value while poti at minimum-position (0 - 4095)
