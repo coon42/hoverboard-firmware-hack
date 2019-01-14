@@ -89,6 +89,14 @@ void poweroff() {
     }
 }
 
+int _lastUartRxTimeMs = 0;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  _lastUartRxTimeMs = 0;
+
+  if (!enable)
+    enable = 1;
+}
 
 int main(void) {
   HAL_Init();
@@ -179,6 +187,7 @@ int main(void) {
   float board_temp_deg_c;
 
   enable = 1;  // enable motors
+  const int CMD_RECEIVE_TIMEOUT_MS = 100000;
 
   while(1) {
     HAL_Delay(DELAY_IN_MAIN_LOOP); //delay in ms
@@ -215,7 +224,25 @@ int main(void) {
       cmd1 = CLAMP((int16_t)command.steer, -1000, 1000);
       cmd2 = CLAMP((int16_t)command.speed, -1000, 1000);
 
+      if (command.speed)
+        enable = 1;
+      else
+        enable = 0;
+
       timeout = 0;
+
+      _lastUartRxTimeMs += DELAY_IN_MAIN_LOOP;
+
+      if (_lastUartRxTimeMs > CMD_RECEIVE_TIMEOUT_MS) {
+        if (enable) {
+          enable = 0;
+
+          // leads to permanent beeping!?
+          // buzzerFreq = 2;
+          // HAL_Delay(100);
+          // buzzerFreq = 0;
+        }
+      }
     #endif
 
 
@@ -256,7 +283,7 @@ int main(void) {
       // ####### CALC BOARD TEMPERATURE #######
       board_temp_adc_filtered = board_temp_adc_filtered * 0.99 + (float)adc_buffer.temp * 0.01;
       board_temp_deg_c = ((float)TEMP_CAL_HIGH_DEG_C - (float)TEMP_CAL_LOW_DEG_C) / ((float)TEMP_CAL_HIGH_ADC - (float)TEMP_CAL_LOW_ADC) * (board_temp_adc_filtered - (float)TEMP_CAL_LOW_ADC) + (float)TEMP_CAL_LOW_DEG_C;
-      
+
       // ####### DEBUG SERIAL OUT #######
       #ifdef CONTROL_ADC
         setScopeChannel(0, (int)adc_buffer.l_tx2);  // 1: ADC1
